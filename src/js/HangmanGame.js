@@ -1,39 +1,45 @@
-define('HangmanGame', ['HangmanDrawing'], function (HangmanDrawing) {
+define(
+    'HangmanGame',
+    [
+        'HangmanDrawing',
+        'HangmanPhrase',
+        'HangmanKeyboard'
+    ],
+    function (HangmanDrawing, HangmanPhrase, HangmanKeyboard) {
 
-    var HangmanGame = function () {
+        var HangmanGame = function () {
+            _.bindAll.apply(_, [this].concat(_.functions(this)));
+        };
 
-    };
+        HangmanGame.prototype = {
 
-    HangmanGame.prototype = {
+            start: function () {
 
-        start: function () {
-            var drawing = new HangmanDrawing();
-            drawing.appendTo(document.body);
+                var drawing = new HangmanDrawing();
+                drawing.appendTo(document.body);
+                drawing.demo(function () {
 
-                drawing.drawBaseLeft(function () {
-                    drawing.drawBaseRight(function () {
-                        drawing.drawUpright(function () {
-                            drawing.drawTopBeam(function () {
-                                drawing.drawRope(function () {
-                                    drawing.drawHead(function () {
-                                        drawing.drawBody(function () {
-                                            drawing.drawLegs(function () {
-                                                drawing.drawArms_(function () {
-                                                    drawing.clear();
-                                                });
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
+                    // demo finished
+
+                    // start game
+
                 });
 
-        }
+                var phrase = new HangmanPhrase('Saving Private Ryan');
+                phrase.appendTo(document.body);
 
-    };
+                var keyboard = new HangmanKeyboard();
+                keyboard.appendTo(document.body);
 
-    return HangmanGame;
+                keyboard.on('letter', function (e) {
+
+                    console.log(e.letter);
+
+                });
+            }
+
+        };
+
+        return HangmanGame;
 
 });

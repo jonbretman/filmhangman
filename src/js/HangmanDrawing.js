@@ -1,21 +1,38 @@
-define('HangmanDrawing', function () {
+define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
 
     var HangmanDrawing = function () {
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
+
+        this.order = [
+            this.drawBaseLeft,
+            this.drawBaseRight,
+            this.drawUpright,
+            this.drawTopBeam,
+            this.drawRope,
+            this.drawHead,
+            this.drawBody,
+            this.drawLegs,
+            this.drawArms_
+        ];
+
         this.width = 250;
         this.height = 250;
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'hangman-drawing';
+
         var ctx = this.canvas.getContext('2d');
         ctx.lineWidth = 10;
         ctx.strokeStyle = 'rgba(0,0,0,0.5)';
     };
 
-    HangmanDrawing.prototype = {
+    HangmanDrawing.prototype = _.extend(HangmanDrawing.prototype, Events, {
 
+        currentStep: -1,
         width: null,
         height: null,
         canvas: null,
         isComplete: false,
+        order: null,
 
         appendTo: function (el) {
             el.appendChild(this.canvas);
@@ -24,7 +41,35 @@ define('HangmanDrawing', function () {
 
         clear: function () {
             this.canvas.getContext('2d').clearRect(0, 0, this.width, this.height);
+            this.currentStep = -1;
             return this;
+        },
+
+        demo: function (callback) {
+
+            this.clear();
+
+            var next = _.bind(function () {
+
+                if (this.isFinished()) {
+                    callback();
+                }
+                else {
+                    this.nextStep(next);
+                }
+
+            }, this);
+
+            next();
+        },
+
+        nextStep: function (callback) {
+            this.currentStep++;
+            return this.order[this.currentStep](callback);
+        },
+
+        isFinished: function () {
+            return this.currentStep === this.order.length - 1;
         },
 
         drawBaseLeft: function (callback) {
@@ -248,8 +293,7 @@ define('HangmanDrawing', function () {
             return this;
         }
 
-    };
+    });
 
     return HangmanDrawing;
-
 });

@@ -17,7 +17,12 @@ module.exports = function(grunt) {
                     baseUrl: 'src/js',
                     name: 'main',
                     out: 'public/js/main.js',
-                    optimize: 'none'
+                    optimize: 'none',
+                    shim: {
+                        'libs/underscore': {
+                            exports: '_'
+                        }
+                    }
                 }
             }
         },
@@ -42,7 +47,7 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: 'src/js/libs',
-                        src: ['require.js'],
+                        src: ['*.js'],
                         dest: 'public/js/libs'
                     },
                     {

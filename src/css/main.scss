@@ -1,3 +1,23 @@
+@mixin border-radius ($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  -o-border-radius: $radius;
+  border-radius: $radius;
+}
+@mixin transition ($params) {
+  -webkit-transition: $params;
+  -moz-transition: $params;
+  -ms-transition: $params;
+  -o-transition: $params;
+  transition: $params;
+}
+
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -6,4 +26,60 @@ body {
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 100%;
   line-height: 1em;
+}
+
+#hangman-drawing {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  border: 3px solid #333;
+  margin: 1em;
+}
+
+.hangman-phrase {
+  margin-top: 25px;
+  font-size: 1.5em;
+  padding-left: 300px;
+  text-align: center;
+  min-height: 300px;
+}
+.hangman-word {
+  margin: 0 1.5em 1em 0;
+  display: inline-block;
+}
+.hangman-letter {
+  @include transition(all 250ms ease);
+  padding: 0.5em;
+  margin-right: 0.2em;
+  border-bottom: 3px solid #333;
+  display: inline-block;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: transparent;
+
+  &.guessed {
+    color: #333;
+  }
+}
+
+.hangman-keyboard {
+  text-align: center;
+}
+.hangman-keyboard-key {
+  @include border-radius(10px);
+  @include transition(all 250ms ease);
+  width: 50px;
+  line-height: 1.5em;
+  font-size: 2em;
+  display: inline-block;
+  padding-bottom: 0.1em;
+  border: 1px solid #DDD;
+  font-weight: bold;
+  margin: 0.25em;
+
+  &.selected {
+    position: relative;
+    -webkit-transform: scale3d(1.5, 1.5, 1);
+    color: #0b97c4;
+  }
 }
