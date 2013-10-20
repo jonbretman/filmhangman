@@ -1,4 +1,4 @@
-define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
+define('HangmanDrawing', ['libs/underscore'], function (_) {
 
     var HangmanDrawing = function () {
         _.bindAll.apply(_, [this].concat(_.functions(this)));
@@ -18,11 +18,13 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
         this.height = 250;
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'hangman-drawing';
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
         this.currentColour_ = this.OUTLINE_COLOUR;
     };
 
-    HangmanDrawing.prototype = _.extend(HangmanDrawing.prototype, Events, {
+    HangmanDrawing.prototype = {
 
         currentColour_: null,
         currentStep: -1,
@@ -205,16 +207,20 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
             return buffer;
         },
 
+        getContext_: function () {
+            var ctx = this.canvas.getContext('2d');
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = this.currentColour_;
+            return ctx;
+        },
+
+
         drawCircle_: function (opts) {
 
-            var x = opts.x;
-            var y = opts.y;
-            var duration = opts.duration;
-            var callback = opts.callback;
             var buffer = this.getBuffer_();
             var canvas = this.canvas;
-            var ctx = canvas.getContext('2d');
-            var segments = (duration / 1000) * 60;
+            var ctx = this.getContext_();
+            var segments = (opts.duration / 1000) * 60;
             var currentSegment = 0;
 
             var nextTick = function (num) {
@@ -226,7 +232,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(buffer, 0, 0);
                 ctx.beginPath();
-                ctx.arc(x, y, 15, 0, end);
+                ctx.arc(opts.x, opts.y, 15, 0, end);
                 ctx.stroke();
                 ctx.closePath();
             };
@@ -238,39 +244,28 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                     requestAnimationFrame(render);
                 }
                 else {
-                    callback();
+                    opts.callback();
                 }
             };
 
-            canvas.width = this.width;
-            canvas.height = this.height;
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-
-            render();
+            requestAnimationFrame(render);
             return this;
         },
 
         drawLine_: function (opts) {
 
-            var x = opts.x;
-            var y = opts.y;
-            var endX = opts.endX;
-            var endY = opts.endY;
-            var duration = opts.duration;
-            var callback = opts.callback;
-            var canvas = this.canvas;
             var buffer = this.getBuffer_();
-            var ctx = this.canvas.getContext('2d');
-            var segments = (duration / 1000) * 60;
+            var canvas = this.canvas;
+            var ctx = this.getContext_();
+            var segments = (opts.duration / 1000) * 60;
             var currentSegment = 0;
-            var tickX = (endX - x) / segments;
-            var tickY = (endY - y) / segments;
+            var tickX = (opts.endX - opts.x) / segments;
+            var tickY = (opts.endY - opts.y) / segments;
 
             var nextTick = function (num) {
                 return {
-                    x: x + (tickX * num),
-                    y: y + (tickY * num)
+                    x: opts.x + (tickX * num),
+                    y: opts.y + (tickY * num)
                 };
             };
 
@@ -278,7 +273,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(buffer, 0, 0);
                 ctx.beginPath();
-                ctx.moveTo(x, y);
+                ctx.moveTo(opts.x, opts.y);
                 ctx.lineTo(coords.x, coords.y);
                 ctx.closePath();
                 ctx.stroke();
@@ -291,20 +286,15 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                     requestAnimationFrame(render);
                 }
                 else {
-                    callback();
+                    opts.callback();
                 }
             };
 
-            canvas.width = this.width;
-            canvas.height = this.height;
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = this.currentColour_;
-
-            render();
+            requestAnimationFrame(render);
             return this;
         }
 
-    });
+    };
 
     return HangmanDrawing;
 });

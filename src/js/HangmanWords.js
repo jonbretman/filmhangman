@@ -34,6 +34,7 @@ define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
 
             var letters = [];
             var unique = this.leftToGuess_ = [];
+            this.el.innerHTML = '';
 
             _.each(this.words_, function (word) {
 
@@ -41,36 +42,45 @@ define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
                 container.className = 'hangman-word';
 
                 _.each(word, function (letter) {
+
                     letter = letter.toUpperCase();
+
                     var d = document.createElement('span');
                     d.innerText = letter;
-                    d.className = 'hangman-letter hidden hangman-letter-' + letter;
-                    container.appendChild(d);
+                    d.className = 'hangman-letter hidden';
                     letters.push($(d));
 
-                    if (unique.indexOf(letter) === -1) {
-                        unique.push(letter);
+                    if (!/[A-Z]/.test(letter)) {
+                        d.className += ' non-letter';
+                    }
+                    else {
+
+                        d.className += ' hangman-letter-' + letter;
+
+                        if (unique.indexOf(letter) === -1) {
+                            unique.push(letter);
+                        }
                     }
 
+                    container.appendChild(d);
                 });
 
                 this.el.appendChild(container);
 
             }, this);
 
-            var showNextLetter = _.bind(function () {
+            var showNextLetter = _.partial(requestAnimationFrame, _.bind(function () {
                 var letter = letters.shift();
                 if (!letter) {
                     this.trigger('ready');
                 }
                 else {
                     letter.removeClass('hidden');
-                    setTimeout(showNextLetter, 150);
+                    setTimeout(showNextLetter, 100);
                 }
-            }, this);
+            }, this));
 
             showNextLetter();
-
             return this;
         },
 
