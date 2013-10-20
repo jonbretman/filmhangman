@@ -16,8 +16,8 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
 
         var playAgainButton = this.playAgainButton_ = document.createElement('input');
         playAgainButton.type = 'submit';
+        playAgainButton.value = 'Play Again';
         playAgainButton.id = 'hangman-play-again-button';
-        playAgainButton.innerHTML = 'Play Again';
         this.el_.appendChild(playAgainButton);
 
         this.backdrop_ = document.createElement('div');
