@@ -4,8 +4,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         this.order = [
-            this.drawBaseLeft,
-            this.drawBaseRight,
+            this.drawBase,
             this.drawUpright,
             this.drawTopBeam,
             this.drawRope,
@@ -20,13 +19,12 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'hangman-drawing';
 
-        var ctx = this.canvas.getContext('2d');
-        ctx.lineWidth = 10;
-        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+        this.currentColour_ = this.OUTLINE_COLOUR;
     };
 
     HangmanDrawing.prototype = _.extend(HangmanDrawing.prototype, Events, {
 
+        currentColour_: null,
         currentStep: -1,
         width: null,
         height: null,
@@ -34,28 +32,34 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
         isComplete: false,
         order: null,
 
+        OUTLINE_COLOUR: 'rgba(0,0,0,0.5)',
+        DRAW_COLOUR: 'red',
+
         appendTo: function (el) {
             el.appendChild(this.canvas);
             return this;
         },
 
-        clear: function () {
+        reset: function () {
             this.canvas.getContext('2d').clearRect(0, 0, this.width, this.height);
             this.currentStep = -1;
+            this.currentColour_ = this.OUTLINE_COLOUR;
             return this;
         },
 
-        demo: function (callback) {
+        drawOutline: function (callback) {
 
-            this.clear();
+            this.reset();
 
             var next = _.bind(function () {
 
                 if (this.isFinished()) {
+                    this.currentColour_ = this.DRAW_COLOUR;
+                    this.currentStep = -1;
                     callback();
                 }
                 else {
-                    this.nextStep(next);
+                    this.drawNext(next);
                 }
 
             }, this);
@@ -63,13 +67,20 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
             next();
         },
 
-        nextStep: function (callback) {
-            this.currentStep++;
-            return this.order[this.currentStep](callback);
+        drawNext: function (callback) {
+            if (this.currentStep >= this.order.length - 1) {
+                return this;
+            }
+            return this.order[++this.currentStep](callback || _.identity);
         },
 
         isFinished: function () {
-            return this.currentStep === this.order.length - 1;
+            return this.currentStep >= this.order.length - 1;
+        },
+
+        drawBase: function (callback) {
+            this.drawBaseLeft(_.partial(this.drawBaseRight, callback));
+            return this;
         },
 
         drawBaseLeft: function (callback) {
@@ -78,7 +89,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: this.height - 20,
                 endX: 63,
                 endY: this.height - 63,
-                duration: 500,
+                duration: 250,
                 callback: callback
             });
             return this;
@@ -90,7 +101,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: this.height - 20,
                 endX: 57,
                 endY: this.height - 63,
-                duration: 500,
+                duration: 250,
                 callback: callback
             });
             return this;
@@ -102,7 +113,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: this.height - 60,
                 endX: 60,
                 endY: 20,
-                duration: 750,
+                duration: 500,
                 callback: callback
             });
             return this;
@@ -114,7 +125,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: 25,
                 endX: 170,
                 endY: 25,
-                duration: 750,
+                duration: 500,
                 callback: callback
             });
             return this;
@@ -126,7 +137,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: 20,
                 endX: 165,
                 endY: 65,
-                duration: 500,
+                duration: 350,
                 callback: callback
             });
             return this;
@@ -136,7 +147,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
             this.drawCircle_({
                 x: 165,
                 y: 84,
-                duration: 1000,
+                duration: 500,
                 callback: callback
             });
             return this;
@@ -148,7 +159,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: 100,
                 endX: 165,
                 endY: 160,
-                duration: 500,
+                duration: 350,
                 callback: callback
             });
             return this;
@@ -160,14 +171,14 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: 200,
                 endX: 165,
                 endY: 160,
-                duration: 500,
+                duration: 150,
                 callback: function () {
                     this.drawLine_({
                         x: 195,
                         y: 200,
                         endX: 165,
                         endY: 160,
-                        duration: 500,
+                        duration: 150,
                         callback: callback
                     });
                 }.bind(this)
@@ -180,7 +191,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
                 y: 130,
                 endX: 205,
                 endY: 130,
-                duration: 500,
+                duration: 200,
                 callback: callback
             });
         },
@@ -287,7 +298,7 @@ define('HangmanDrawing', ['libs/underscore', 'Events'], function (_, Events) {
             canvas.width = this.width;
             canvas.height = this.height;
             ctx.lineWidth = 10;
-            ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+            ctx.strokeStyle = this.currentColour_;
 
             render();
             return this;
