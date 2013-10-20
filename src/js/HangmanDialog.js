@@ -33,12 +33,12 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
 
         wnnersTemplate_: [
             '<h3>Well done!</h3>',
-            '<p>You guessed <strong>{{ film }}</strong> in {{ time }}</p>'
+            '<p>You guessed <strong>{{ film }}</strong> in {{ time }}.</p>'
         ].join(''),
 
         losersTemplate_: [
             '<h3>Out of guesses :(</h3>',
-            '<p>The correct answer was <strong>{{ film }}</strong></p>'
+            '<p>The correct answer was <strong>{{ film }}</strong>.</p>'
         ].join(''),
 
         appendTo: function (el) {
@@ -67,8 +67,6 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
 
             // animate the dialog
             $(this.el_).removeClass('hidden');
-
-            this.playAgainButton_.focus();
             return this;
         },
 

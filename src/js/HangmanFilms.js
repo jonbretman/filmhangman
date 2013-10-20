@@ -26,14 +26,14 @@ define('HangmanFilms', function () {
 
         films_: [
             'Unbreakable',
-            'The Green Mile',
-            'Saving Private Ryan',
-            'Ghostbusters',
-            'Sin City',
-            'Captain America',
-            'Avengers Assemble',
-            'Schindlers List',
-            'The Boy in the Striped Pyjamas'
+            'The Green Mile'
+//            'Saving Private Ryan',
+//            'Ghostbusters',
+//            'Sin City',
+//            'Captain America',
+//            'Avengers Assemble',
+//            'Schindlers List',
+//            'The Boy in the Striped Pyjamas'
         ],
 
         currentFilm_: null,
@@ -69,16 +69,15 @@ define('HangmanFilms', function () {
 
         getNext: function () {
 
-            // if we've run out of films swap the lists
-            if (this.films_.length === 0) {
-                this.films_ = this.completed_;
-                this.completed_.length = 0;
-            }
-
             // if there is a current film add it to the completed list
             if (this.currentFilm_) {
                 this.completed_.unshift(this.films_.pop());
                 this.save_();
+            }
+            // if we've run out of films swap the lists
+            if (this.films_.length === 0) {
+                this.films_ = this.completed_;
+                this.completed_ = [];
             }
 
             // return the film at the end of the list

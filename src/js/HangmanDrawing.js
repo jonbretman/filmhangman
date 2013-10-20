@@ -34,8 +34,8 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
         isComplete: false,
         order: null,
 
-        OUTLINE_COLOUR: 'rgba(0,0,0,0.5)',
-        DRAW_COLOUR: 'red',
+        OUTLINE_COLOUR: 'rgba(44,62,80, 0.3)',
+        DRAW_COLOUR: '#FC4349',
 
         appendTo: function (el) {
             el.appendChild(this.canvas);
