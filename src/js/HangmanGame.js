@@ -95,7 +95,7 @@ define(
                 var done = _.after(2, this.enableGame_);
                 this.getDialog().hide();
                 this.getKeyboard().reset().disable();
-                this.getDrawing().appendTo(document.body).drawOutline(done);
+                this.getDrawing().drawOutline(done);
                 this.getWords().once('ready', done).setWords(this.getFilms().getNext());
             },
 
