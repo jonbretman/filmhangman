@@ -1,5 +1,9 @@
 define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Events, _) {
 
+    /**
+     * HangmanDialog class
+     * @constructor
+     */
     var HangmanDialog = function () {
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
@@ -26,26 +30,72 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
 
     HangmanDialog.prototype = _.extend(HangmanDialog.prototype, Events, {
 
+        /**
+         * The backdrop element
+         * @type {HTMLElement}
+         * @private
+         */
         backdrop_: null,
+
+        /**
+         * The main dialog element
+         * @type {HTMLElement}
+         * @private
+         */
         el_: null,
+
+        /**
+         * The dialog content element
+         * @type {HTMLElement}
+         * @private
+         */
         content_: null,
+
+        /**
+         * The play again element
+         * @type {HTMLElement}
+         * @private
+         */
         playAgainButton_: null,
 
-        wnnersTemplate_: [
+        /**
+         * Template for the dialog shown when user correctly guesses the film.
+         * @type {String}
+         * @private
+         */
+        winnersTemplate_: [
             '<h3>Well done!</h3>',
             '<p>You guessed <strong>{{ film }}</strong> in {{ time }}.</p>'
         ].join(''),
 
+        /**
+         * Template for the dialog shown when user runs out of guesses.
+         * @type {String}
+         * @private
+         */
         losersTemplate_: [
             '<h3>Out of guesses :(</h3>',
             '<p>The correct answer was <strong>{{ film }}</strong>.</p>'
         ].join(''),
 
+        /**
+         * Append this View to the element passes.
+         * @param {HTMLElement} el
+         * @returns {HangmanDialog}
+         */
         appendTo: function (el) {
             el.appendChild(this.backdrop_);
             return this;
         },
 
+        /**
+         * Shows the dialog.
+         * @param {Object} opts
+         * @param {boolean} opts.won True if the user successfully guessed the film.
+         * @param {String} opts.film The film the user was trying to guess.
+         * @param {Number} [opts.time] The time it took the user to guess the film.
+         * @returns {HangmanDialog}
+         */
         show: function (opts) {
 
             if (!opts) {
@@ -53,7 +103,7 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
             }
 
             if (opts.won) {
-                this.content_.innerHTML = this.wnnersTemplate_.replace('{{ film }}', opts.film).replace('{{ time }}', this.formatTime_(opts.time));
+                this.content_.innerHTML = this.winnersTemplate_.replace('{{ film }}', opts.film).replace('{{ time }}', this.formatTime_(opts.time));
             }
             else {
                 this.content_.innerHTML = this.losersTemplate_.replace('{{ film }}', opts.film);
@@ -70,6 +120,10 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
             return this;
         },
 
+        /**
+         * Hides the dialog.
+         * @returns {HangmanDialog}
+         */
         hide: function () {
             $(this.el_).addClass('hidden');
 
@@ -77,6 +131,12 @@ define('HangmanDialog', ['DOM', 'Events', 'libs/underscore'], function ($, Event
             return this;
         },
 
+        /**
+         * Formats milliseconds into a human readable string representing how long it took the user to took the film.
+         * @param {Number} ms
+         * @returns {string}
+         * @private
+         */
         formatTime_: function (ms) {
             var result = [];
             if (ms > 60000) {

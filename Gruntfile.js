@@ -17,7 +17,7 @@ module.exports = function(grunt) {
                     baseUrl: 'src/js',
                     name: 'main',
                     out: 'public/js/main.js',
-                    optimize: 'none',
+                    optimize: 'uglify2',
                     shim: {
                         'libs/underscore': {
                             exports: '_'
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
             },
             compile: {
                 options: {
-                    style: 'expanded'
+                    style: 'compressed'
                 },
                 files: {
                     'public/css/main.css': 'src/css/main.scss'
@@ -72,15 +72,6 @@ module.exports = function(grunt) {
             html: {
                 files: ['src/index.html'],
                 tasks: ['copy:main']
-            }
-        },
-
-        mocha: {
-            src: 'target/debug/test/index.html',
-            options: {
-                run: false,
-                reporter: 'Spec',
-                log: true
             }
         }
 

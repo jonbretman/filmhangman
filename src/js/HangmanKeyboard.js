@@ -1,15 +1,24 @@
 define('HangmanKeyboard', ['DOM', 'Events', 'libs/underscore'], function ($, Events, _) {
 
+    /**
+     * Array of letters desribing the structure of a Qwerty keyboard
+     * @type {Array}
+     */
     var querty = [
         ['q','w','e','r','t','y','u','i','o','p'],
          ['a','s','d','f','g','h','j','k','l'],
             ['z','x','c','v','b','n','m']
     ];
 
+    // detect touch support
     var hasTouch = 'ontouchstart' in window;
     var touchStartEvent = hasTouch ? 'touchstart' : 'mousedown';
     var touchEndEvent = hasTouch ? 'touchend' : 'mouseup';
 
+    /**
+     * HangmanKeyboard class
+     * @constructor
+     */
     var HangmanKeyboard = function () {
         _.bindAll.apply(_, [this].concat(_.functions(this)));
         this.createKeyboard_();
@@ -18,6 +27,9 @@ define('HangmanKeyboard', ['DOM', 'Events', 'libs/underscore'], function ($, Eve
 
     HangmanKeyboard.prototype = _.extend(HangmanKeyboard.prototype, Events, {
 
+        /**
+         * Flag indicating whether the kayboard is enabled or not.
+         */
         enabled_: false,
 
         KEY_A: 65,
@@ -27,37 +39,68 @@ define('HangmanKeyboard', ['DOM', 'Events', 'libs/underscore'], function ($, Eve
         KEY_REG_EXP: /hangman-keyboard-key-[A-Z]/,
 
         currentKey_: null,
-        
+
+        /**
+         * Appends this view to the pased element.
+         * @param el
+         * @returns {*}
+         */
         appendTo: function (el) {
             el.appendChild(this.el);
             return this;
         },
 
+        /**
+         * Disables the kayboard
+         * @returns {*}
+         */
         disable: function () {
             this.enabled_ = false;
             return this;
         },
 
+        /**
+         * Enables the keyboard.
+         * @returns {*}
+         */
         enable: function () {
             this.enabled_ = true;
             return this;
         },
 
+        /**
+         * Resets the keyboard to it's default state.
+         * @returns {*}
+         */
         reset: function () {
             $('.hangman-keyboard-key').removeClass('selected guessed-correct guessed-incorrect');
             return this;
         },
 
+        /**
+         * Sets the passed letter to the guessed-correct state.
+         * @param letter
+         * @returns {*}
+         */
         setLetterCorrect: function (letter) {
             $('#hangman-keyboard-key-' + letter).addClass('guessed-correct');
             return this;
         },
 
+        /**
+         * Sets the passed letter to the guessed-incorrect state
+         * @param letter
+         * @returns {*}
+         */
         setLetterIncorrect: function (letter) {
             $('#hangman-keyboard-key-' + letter).addClass('guessed-incorrect');
             return this;
         },
 
+        /**
+         * Creates the keyboard.
+         * @private
+         */
         createKeyboard_: function () {
 
             this.el = document.createElement('div');
@@ -77,6 +120,10 @@ define('HangmanKeyboard', ['DOM', 'Events', 'libs/underscore'], function ($, Eve
             }, this);
         },
 
+        /**
+         * Binds all events.
+         * @private
+         */
         bindEvents_: function () {
             document.addEventListener('keydown', this.onKeyEvent_, false);
             document.addEventListener('keyup', this.onKeyEvent_, false);
@@ -84,22 +131,43 @@ define('HangmanKeyboard', ['DOM', 'Events', 'libs/underscore'], function ($, Eve
             this.el.addEventListener(touchEndEvent, this.onTouchEvent_, false);
         },
 
+        /**
+         * Resets the currently selected key.
+         * @private
+         */
         resetCurrentKey_: function () {
             if (this.currentKey_) {
                 $(this.currentKey_).removeClass('selected');
             }
         },
 
+        /**
+         * Makes the passed key active by adding the selected class.
+         * @param key
+         * @private
+         */
         makeKeyActive_: function (key) {
             $(key).addClass('selected');
             this.currentKey_ = key;
         },
 
+        /**
+         * Returns true if the passes key has already been guessed.
+         * @param key
+         * @returns {*}
+         * @private
+         */
         isKeyGuessed_: function (key) {
             key = $(key);
             return key.hasClass('guessed-correct') || key.hasClass('guessed-incorrect');
         },
 
+        /**
+         * Handles key events.
+         * @param e
+         * @returns {boolean}
+         * @private
+         */
         onKeyEvent_: function (e) {
 
             if (!this.enabled_) {
@@ -137,6 +205,12 @@ define('HangmanKeyboard', ['DOM', 'Events', 'libs/underscore'], function ($, Eve
             return true;
         },
 
+        /**
+         * Handles touch events.
+         * @param e
+         * @returns {boolean}
+         * @private
+         */
         onTouchEvent_: function (e) {
 
             if (!this.enabled_) {

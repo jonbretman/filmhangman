@@ -1,10 +1,18 @@
 define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
 
+    /**
+     * HangmanWords class
+     * @param words
+     * @constructor
+     */
     var HangmanWords = function (words) {
+
+        // bind all methods to correct context
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         this.createElement_();
 
+        // if words passed to constructor set them now
         if (words) {
             this.setWords(words);
         }
@@ -13,23 +21,47 @@ define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
 
     HangmanWords.prototype = _.extend(HangmanWords.prototype, Events, {
 
+        /**
+         * Main  element.
+         */
         el: null,
 
+        /**
+         * Current words.
+         */
         words_: null,
 
+        /**
+         * How many letters are left to guess.
+         */
         leftToGuess_: 0,
 
+        /**
+         * Appends this view to the element passed.
+         * @param el
+         * @returns {*}
+         */
         appendTo: function (el) {
             el.appendChild(this.el);
             return this;
         },
 
+        /**
+         * Creates the root element.
+         * @returns {*}
+         * @private
+         */
         createElement_: function () {
             this.el = document.createElement('div');
             this.el.className = 'hangman-words';
             return this;
         },
 
+        /**
+         * Renders the current words and works out how many unique letters are in the word.
+         * @returns {*}
+         * @private
+         */
         renderWords_: function () {
 
             var letters = [];
@@ -69,6 +101,7 @@ define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
 
             }, this);
 
+            // shows the next letter, if all letters are shown calls the callback
             var showNextLetter = _.partial(requestAnimationFrame, _.bind(function () {
                 var letter = letters.shift();
                 if (!letter) {
@@ -84,9 +117,14 @@ define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
             return this;
         },
 
-        setWords: function (words) {
+        /**
+         * Accepts a string and parses it into a set of words.
+         * @param str
+         * @returns {*}
+         */
+        setWords: function (str) {
 
-            this.words_ = _.map(words.split(' '), function (word) {
+            this.words_ = _.map(str.split(' '), function (word) {
                 return word.split('');
             });
 
@@ -94,16 +132,30 @@ define('HangmanWords', ['DOM', 'Events'], function ($, Events) {
             return this;
         },
 
+        /**
+         * Makes a guess of a letter that might be in the current words.
+         * Returns the number of occurences of that letter.
+         * @param guess
+         * @returns {*}
+         */
         makeGuess: function (guess) {
 
+            // if letter is not found in the leftToGuess_ array then incorrect guess
             if (this.leftToGuess_.indexOf(guess) === -1) {
                 return 0;
             }
 
+            // remove this letter from leftToGuess_ array
             this.leftToGuess_ = _.without(this.leftToGuess_, guess);
+
+            // find all occurances of this letter and show
             return $(this.el).find('.hangman-letter-' + guess).addClass('guessed').length;
         },
 
+        /**
+         * Returns the number of letters left to guess.
+         * @returns {Number}
+         */
         getLeftToGuess: function () {
             return this.leftToGuess_.length;
         }

@@ -1,12 +1,20 @@
 define('HangmanDrawing', ['libs/underscore'], function (_) {
 
+    /**
+     * HangmanDrawing clas
+     * @constructor
+     */
     var HangmanDrawing = function () {
+
+        // bind all methods to correct context
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
+        // order of the drawing
         this.order = [
             this.drawBase,
             this.drawUpright,
             this.drawTopBeam,
+            this.drawSupport,
             this.drawRope,
             this.drawHead,
             this.drawBody,
@@ -14,6 +22,7 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             this.drawArms_
         ];
 
+        // setup
         this.width = 250;
         this.height = 250;
         this.canvas = document.createElement('canvas');
@@ -26,22 +35,76 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
 
     HangmanDrawing.prototype = {
 
+        /**
+         * The current color being drawn with. Either OUTLINE_COLOUR or DRAW_COLOUR
+         * @type {String}
+         * @private
+         */
         currentColour_: null,
+
+        /**
+         * The current step being drawn.
+         * @type {Number}
+         * @private
+         */
         currentStep: -1,
+
+        /**
+         * The width of the canvas
+         * @type {Number}
+         * @private
+         */
         width: null,
+
+        /**
+         * The height of the canvas
+         * @type {Number}
+         * @private
+         */
         height: null,
+
+        /**
+         * The canvas element.
+         * @type {HTMLElement}
+         * @private
+         */
         canvas: null,
-        isComplete: false,
+
+        /**
+         * The order of the drawing methods.
+         * @type {Function[]}
+         * @private
+         */
         order: null,
 
+        /**
+         * The outline color.
+         * @type {String}
+         * @private
+         */
         OUTLINE_COLOUR: 'rgba(44,62,80, 0.3)',
+
+        /**
+         * The strong color used for actual game.
+         * @type {String}
+         * @private
+         */
         DRAW_COLOUR: '#FC4349',
 
+        /**
+         * Appends this view to the passes element.
+         * @param {HTMLElement} el
+         * @returns {HangmanDrawing}
+         */
         appendTo: function (el) {
             el.appendChild(this.canvas);
             return this;
         },
 
+        /**
+         * Resets the drawing.
+         * @returns {HangmanDrawing}
+         */
         reset: function () {
             this.canvas.getContext('2d').clearRect(0, 0, this.width, this.height);
             this.currentStep = -1;
@@ -49,6 +112,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the outline of the hangman.
+         * @param {Function} callback
+         * @returns {HangmanDrawing}
+         */
         drawOutline: function (callback) {
 
             this.reset();
@@ -67,8 +135,14 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             }, this);
 
             next();
+            return this;
         },
 
+        /**
+         * Draws the next step.
+         * @param {Function} callback
+         * @returns {HangmanDrawing}
+         */
         drawNext: function (callback) {
             if (this.currentStep >= this.order.length - 1) {
                 return this;
@@ -76,15 +150,29 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this.order[++this.currentStep](callback || _.identity);
         },
 
+        /**
+         * Returns true if the drawing of the hangman is complete.
+         * @returns {boolean}
+         */
         isFinished: function () {
             return this.currentStep >= this.order.length - 1;
         },
 
+        /**
+         * Draws the base of the hangman.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawBase: function (callback) {
             this.drawBaseLeft(_.partial(this.drawBaseRight, callback));
             return this;
         },
 
+        /**
+         * Draws the left hand side of the base.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawBaseLeft: function (callback) {
             this.drawLine_({
                 x: 20,
@@ -97,6 +185,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the right hand side of the base.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawBaseRight: function (callback) {
             this.drawLine_({
                 x: 100,
@@ -109,6 +202,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the upright part of the hangman drawing.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawUpright: function (callback) {
             this.drawLine_({
                 x: 60,
@@ -121,6 +219,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the top beam of the hangman.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawTopBeam: function (callback) {
             this.drawLine_({
                 x: 55,
@@ -133,6 +236,28 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the support connecting the upright and the top beam.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
+        drawSupport: function (callback) {
+            this.drawLine_({
+                x: 60,
+                y: 60,
+                endX: 90,
+                endY: 25,
+                duration: 500,
+                callback: callback
+            });
+            return this;
+        },
+
+        /**
+         * Draws the rope of the hangman.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawRope: function (callback) {
             this.drawLine_({
                 x: 165,
@@ -145,6 +270,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the hangmans head.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawHead: function (callback) {
             this.drawCircle_({
                 x: 165,
@@ -155,6 +285,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the hangmans body
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawBody: function (callback) {
             this.drawLine_({
                 x: 165,
@@ -167,6 +302,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Draws the hangmans legs.
+         * @param callback
+         * @returns {HangmanDrawing}
+         */
         drawLegs: function (callback) {
             this.drawLine_({
                 x: 135,
@@ -185,8 +325,15 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
                     });
                 }.bind(this)
             });
+            return this;
         },
 
+        /**
+         * Draws the hangmans arms.
+         * @param callback
+         * @private
+         * @returns {HangmanDrawing}
+         */
         drawArms_: function (callback) {
             this.drawLine_({
                 x: 125,
@@ -196,8 +343,14 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
                 duration: 200,
                 callback: callback
             });
+            return this;
         },
 
+        /**
+         * Returns a buffer canvas used to preserve what is on the canvas before drawing.
+         * @returns {HTMLElement}
+         * @private
+         */
         getBuffer_: function () {
             var buffer = document.createElement('canvas');
             buffer.width = this.width;
@@ -207,6 +360,11 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return buffer;
         },
 
+        /**
+         * Returns the 2d context for the canvas.
+         * @returns {CanvasRenderingContext2D}
+         * @private
+         */
         getContext_: function () {
             var ctx = this.canvas.getContext('2d');
             ctx.lineWidth = 10;
@@ -214,7 +372,12 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return ctx;
         },
 
-
+        /**
+         * Animates the drawing of a circle.
+         * @param opts
+         * @returns {HangmanDrawing}
+         * @private
+         */
         drawCircle_: function (opts) {
 
             var buffer = this.getBuffer_();
@@ -252,6 +415,12 @@ define('HangmanDrawing', ['libs/underscore'], function (_) {
             return this;
         },
 
+        /**
+         * Animates the drawing of a line.
+         * @param opts
+         * @returns {HangmanDrawing}
+         * @private
+         */
         drawLine_: function (opts) {
 
             var buffer = this.getBuffer_();

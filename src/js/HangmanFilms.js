@@ -1,5 +1,8 @@
 define('HangmanFilms', function () {
 
+    /**
+     * Detects support for localStorage
+     */
     var hasLocalStorage = (function () {
 
         if (!window.localStorage) {
@@ -16,28 +19,45 @@ define('HangmanFilms', function () {
 
     })();
 
+    /**
+     * HangmanFilms class
+     * @constructor
+     */
     var HangmanFilms = function () {
         this.load_();
     };
 
     HangmanFilms.prototype = {
 
+        /**
+         * Array to hold films that have been played.
+         */
         completed_: [],
 
+        /**
+         * Array holding films yet to be played.
+         */
         films_: [
             'Unbreakable',
-            'The Green Mile'
-//            'Saving Private Ryan',
-//            'Ghostbusters',
-//            'Sin City',
-//            'Captain America',
-//            'Avengers Assemble',
-//            'Schindlers List',
-//            'The Boy in the Striped Pyjamas'
+            'The Green Mile',
+            'Saving Private Ryan',
+            'Ghostbusters',
+            'Sin City',
+            'Captain America',
+            'Avengers Assemble',
+            'Schindlers List',
+            'The Boy in the Striped Pyjamas'
         ],
 
+        /**
+         * The current film.
+         */
         currentFilm_: null,
 
+        /**
+         * Load the films_ and completed_ arrays from localStorage
+         * @private
+         */
         load_: function () {
 
             if (hasLocalStorage) {
@@ -52,6 +72,10 @@ define('HangmanFilms', function () {
 
         },
 
+        /**
+         * Save the films_ and completed_ arrays to localStorage
+         * @private
+         */
         save_: function () {
 
             if (hasLocalStorage) {
@@ -63,10 +87,19 @@ define('HangmanFilms', function () {
 
         },
 
+        /**
+         * Returns the current film.
+         * @returns {String}
+         */
         getCurrent: function () {
             return this.films_[this.films_.length - 1];
         },
 
+        /**
+         * Returns the next film from the films_ queue.
+         * If all films have been played the completed_ and films_ arrays are swapped.
+         * @returns {String}
+         */
         getNext: function () {
 
             // if there is a current film add it to the completed list
