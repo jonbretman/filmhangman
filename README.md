@@ -10,6 +10,17 @@ $ grunt
 $ node ./app.js
 ```
 
+### Technologies / Libraries used
+* Canvas
+* CSS3 Transitions
+* localStorage
+* SASS (CSS Preprocessor)
+* RequireJS (AMD)
+* Underscore.js (Utility library)
+* Node (For Grunt and Express)
+* Grunt (Build process)
+* Express (For simple local server)
+
 ### Improvements
 
 If I was to continue development of this I would make the following improvements.
